@@ -1,27 +1,12 @@
-/**
- * ActionとはJavaScriptのオブジェクト
- * 値とtype（ユニーク）を持つ。
- */
+import axios from 'axios'
 
-// export const increment = () => {
-//   return {
-//     type: 'INCREMENT'
-//   }
-// }
-// export const decrement = () => {
-//   return {
-//     type: 'DECREMENT'
-//   }
-// }
+const ROOT_URL = 'https://udemy-utils.herokuapp.com/api/v1'
+const QUERYSTRING = '?token=token123'
 
-// ↓  コードをスリム化
-
-// export const increment = () => ({ type: 'INCREMENT' })
-// export const decrement = () => ({ type: 'DECREMENT' })
-
-// ↓  リテラルを別の箇所でも使うので、別で定義・EXPORT
-
-export const INCREMENT = 'INCREMENT'
-export const DECREMENT = 'DECREMENT'
-export const increment = () => ({ type: INCREMENT})
-export const decrement = () => ({ type: DECREMENT })
+export const READ_EVENTS = 'READ_EVENTS';
+//export const readEvents = () => ({ type: READ_EVENTS });
+export const readEvents = () => async dispatch => {
+  const response = await axios.get(`${ROOT_URL}/events${QUERYSTRING}`)
+  //console.log(response)
+  dispatch({ type: READ_EVENTS, response })
+}
