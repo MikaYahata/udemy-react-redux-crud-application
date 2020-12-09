@@ -3,9 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import { Link } from 'react-router-dom';
 
-import { getEvent } from '../actions';
-import { deleteEvent } from '../actions';
-import { putEvent } from '../actions';
+import { getEvent, deleteEvent, putEvent } from '../actions';
 
 class EventsShow extends Component{
   constructor(props){
@@ -15,6 +13,12 @@ class EventsShow extends Component{
     this.onDeleteClick = this.onDeleteClick.bind(this)
     // this.onSubmit = this.onSubmit.bind(this)  //バインドは決まり事
   }
+
+  componentDidMount() {
+    const { id } = this.props.match.params
+    if(id) this.props.getEvent(id)
+  }
+
   renderField(field){
     const { input, label, type, meta: { touched, error } } = field
     return (
@@ -26,7 +30,7 @@ class EventsShow extends Component{
   }
 
   async onSubmit(values) {
-    // await this.props.postEvent(values)
+    await this.props.putEvent(values)
     this.props.history.push('/')
   }
 
@@ -44,7 +48,11 @@ class EventsShow extends Component{
   }
 
   render() {
-    const { handleSubmit, pristine, submitting } = this.props
+    // バリデーションチェックの条件
+    // pristine:更新されていない
+    // submitting:submitが押下済み
+    // invalid:無効（null）の場合
+    const { handleSubmit, pristine, submitting, invalid } = this.props
     //console.log({submitting})
     return  (
       <React.Fragment>
@@ -53,7 +61,7 @@ class EventsShow extends Component{
           <div><Field label="Body" name="body" type="text" component={this.renderField} /></div>
 
           <div>
-            <input type="submit" value="SUBMIT" disabled={pristine || submitting}  />
+            <input type="submit" value="SUBMIT" disabled={pristine || submitting || invalid}  />
             <Link to="/">CANCEL</Link>
             <Link to="/" onClick={this.onDeleteClick}>DELETE</Link>
           </div>
@@ -64,7 +72,12 @@ class EventsShow extends Component{
   }
 }
 
-const mapDispatchToProps = ({ deleteEvent })
+const mapStateToProps = (state, ownProps) => {
+  const event = state.events[ownProps.match.params.id]
+  return { initialValues: event, state }
+}
+
+const mapDispatchToProps = ({ deleteEvent, getEvent, putEvent })
 
 const validate = values =>{
   const errors = {}
@@ -73,6 +86,6 @@ const validate = values =>{
 
   return errors;
 }
-export default connect(null, mapDispatchToProps )(  // deleteEventを関数として認識する箇所
-  reduxForm({ validate, form: 'eventShowForm'})(EventsShow)
+export default connect(mapStateToProps, mapDispatchToProps )(  // deleteEventを関数として認識する箇所
+  reduxForm({ validate, form: 'eventShowForm', enableReinitialize: true} )(EventsShow)
 )

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { READ_EVENTS, DELETE_EVENT } from '../actions';
+import { READ_EVENTS, CREATE_EVENT, DELETE_EVENT, READ_EVENT, UPDATE_EVENT } from '../actions';
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default (events = {}, action) => {
@@ -25,6 +25,15 @@ export default (events = {}, action) => {
       delete events[action.id]
       return { ...events };
 
+    case CREATE_EVENT:
+    case READ_EVENT:
+    case UPDATE_EVENT:
+        /**
+       * console.log(action.response.data)
+       * {id: 10, title: "Let's have an event 10!", body: "This is the body for event 10."}
+       */
+      const data = action.response.data
+      return { ...events, [data.id]: data };
     default:
       return events;
   }
