@@ -1,33 +1,42 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {Component} from 'react';
 
-/*Props 属性（メンバ）定義機能*/
-const App = () => {
-  const profiles = [
-    {name: "Taro", age:10},
-    {name: "Hanako", age:5},
-    {name: "Noname", age:3}
-  ];
+/*state 変更可能 クラスコンポーネントで利用できる機能 */
+/*Appコンポーネントがカウンターコンポーネントを呼び出す*/
+const App = () => (<Counter></Counter>)
 
-  return  (
-    <div>
-      {
-        profiles.map((profile, index) => {
-          return  <User name={profile.name} age={profile.age} key={index} />
-        })
-      }
-    </div>
-  )
+class Counter extends Component{
+  constructor(props){
+    super(props)
+    //console.log(this.state) // log = "undefined"
+    this.state = {count: 0}
+  }
+
+  /**
+   *  this.stateを設定するときは、this.setState()関数を必ず使う。
+   * （renderとの連携が必要。this.stateを直接設定してしまうとrenderが動かない）
+   */
+  handlePlusButton = () => {
+    //console.log("handlePlusButton");
+    this.setState({ count: this.state.count + 1 });
+    //console.log(this.state.count);
+  }
+  handleMinusButton = () => {
+    this.setState({ count: this.state.count - 1 });
+  }
+
+  render() {
+    // constructorが無かったら...
+    // console.log(this.state) // log = "null"
+    return  (
+      <React.Fragment>
+        <div>count: {this.state.count}</div>
+        <button onClick={this.handlePlusButton}>+1</button>
+        <button onClick={this.handleMinusButton}>-1</button>
+      </React.Fragment>
+    )
+  }
 }
 
-const User = (props) => {
-  return  <div>Hi, Iam {props.name}, and {props.age} years old! </div>
-}
 
-/*propTypes 属性（メンバ）の型チェック機能*/
-User.propTypes = {
-  name: PropTypes.string,
-  age: PropTypes.number.isRequired
-}
 
 export default App;
